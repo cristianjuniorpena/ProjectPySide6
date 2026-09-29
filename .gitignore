@@ -1,0 +1,12 @@
+venv/
+.venv/
+
+__pycache__/
+*.pyc
+
+*.xlsx
+sample.xlsl
+
+myrecursos_rc.py
+ui_main.py
+importante.txt
