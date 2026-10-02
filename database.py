@@ -50,10 +50,10 @@ class Database():
             self.cursor.close()
             self.connection.close()
     
-    def delete_empresa(self, id):
+    def delete_empresa(self, cnpj):
         try:
             self.connect()
-            self.cursor.execute('''delete from empresa where cnpj = %s''', (id,));
+            self.cursor.execute('''delete from empresa where cnpj = %s''', (cnpj,));
             self.connection.commit()
             print('dados excluídos com sucesso')
         except mysql.connector.Error as error:
@@ -62,14 +62,18 @@ class Database():
             self.cursor.close()
             self.connection.close()
     
-    def update_empresa(self, dadosAlterados, id):
+    def update_empresa(self, dados_alterados, cnpj):
         try:
             self.connect()
-            self.cursor.execute('''update empresa set %s where cnpj = %s''', (dadosAlterados, id));
+            campos = ', '.join(f'`{campo}` = %s' for campo in dados_alterados)
+            valores = list(dados_alterados.values()) + [cnpj]
+            self.cursor.execute(f'UPDATE empresa SET {campos} WHERE cnpj = %s', valores)
             self.connection.commit()
             print('dados alterados com sucesso')
+            return True
         except mysql.connector.Error as error:
             print(f'erro na alteração de dados {error}')
+            return False
         finally:
             self.cursor.close()
             self.connection.close()

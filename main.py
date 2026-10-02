@@ -1,11 +1,14 @@
-from PySide6.QtCore import QCoreApplication
+from PySide6.QtCore import QCoreApplication, Qt
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication, QMainWindow, QTableWidgetItem
 from ui_main import Ui_MainWindow
-from excel import exportar_excel
+from excel import export_excel
 from requisicoes import requestCNPJ
 from database import Database
 import sys
+
+CAMPOS = ('cnpj', 'nome_empresa', 'logradouro', 'numero', 'complemento',
+          'bairro', 'municipio', 'uf', 'cep', 'telefone', 'email')
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -33,7 +36,7 @@ class MainWindow(QMainWindow):
 
         self.ui.tabWidget.currentChanged.connect(self.show_registers_from_database)
 
-        self.ui.txt_cnpj.textChanged.connect(self.auto_insert)
+        self.ui.txt_cnpj.textChanged.connect(self.auto_complete)
         self.ui.txt_nome_empresa.textChanged.connect(self.alterar_nome_empresa)
 
 
@@ -41,7 +44,7 @@ class MainWindow(QMainWindow):
         texto_rico = f'<html><head/><body><p align="center"><span style=" font-size:16pt; font-weight:700;">{self.ui.txt_nome_empresa.text()}</span></p></body></html>'
         self.ui.nomeEmpresa.setText(texto_rico)
 
-    def auto_insert(self):
+    def auto_complete(self):
         cnpj = self.ui.txt_cnpj.text()
         new_cnpj = cnpj.replace(' ', '').replace('-', '').replace('.', '').replace('/', '')
         if len(new_cnpj) == 14:
@@ -58,21 +61,16 @@ class MainWindow(QMainWindow):
             self.ui.txt_email.setText(request['email'])
 
 
-    def show_rows(self, cnpj, nome_empresa, logradouro, numero, complemento, bairro, municipio, uf, cep, telefone, email):
-        row_index = self.table.rowCount()  
-        self.table.insertRow(row_index)       
+    def insert_qtrows(self, *valores):
+        row_index = self.table.rowCount()
+        self.table.insertRow(row_index)
 
-        self.table.setItem(row_index, 0, QTableWidgetItem(cnpj))
-        self.table.setItem(row_index, 1, QTableWidgetItem(nome_empresa))
-        self.table.setItem(row_index, 2, QTableWidgetItem(logradouro))
-        self.table.setItem(row_index, 3, QTableWidgetItem(numero))
-        self.table.setItem(row_index, 4, QTableWidgetItem(complemento))
-        self.table.setItem(row_index, 5, QTableWidgetItem(bairro))
-        self.table.setItem(row_index, 6, QTableWidgetItem(municipio))
-        self.table.setItem(row_index, 7, QTableWidgetItem(uf))
-        self.table.setItem(row_index, 8, QTableWidgetItem(cep))
-        self.table.setItem(row_index, 9, QTableWidgetItem(telefone))
-        self.table.setItem(row_index, 10, QTableWidgetItem(email))
+        for column, valor in enumerate(valores):
+            item = QTableWidgetItem(str(valor))
+            item.setData(Qt.ItemDataRole.UserRole, str(valor))
+            if column == 0:
+                item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+            self.table.setItem(row_index, column, item)
 
     def insert_row_from_qt(self):
         entries = [
@@ -90,25 +88,46 @@ class MainWindow(QMainWindow):
         ]
 
         self.database.insert_empresa(*entries)
-        self.show_rows(*entries)
+        self.insert_qtrows(*entries)
 
     def show_registers_from_database(self):
         registers = self.database.select_empresa()
+        self.table.setRowCount(0)
         for i in registers:
-            self.show_rows(i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10])
-    
+            self.insert_qtrows(*i)
+
     def delete_row(self):
         selected_row = self.table.currentRow()
-        cnpj = self.table.item(selected_row, 0).text()
+        if selected_row < 0:
+            return
+        cnpj = self.table.item(selected_row, 0).data(Qt.ItemDataRole.UserRole)
         self.database.delete_empresa(cnpj)
         self.table.removeRow(selected_row)
 
     def alter_database(self):
-        registers = self.database.select_empresa()
-        for i in registers:
-            self.insert_row()
-        
-    
+        selected_row = self.table.currentRow()
+        if selected_row < 0:
+            return
+
+        cnpj_original = self.table.item(selected_row, 0).data(Qt.ItemDataRole.UserRole)
+        dados_alterados = {}
+
+        for column, campo in enumerate(CAMPOS):
+            if column == 0:
+                continue
+            item = self.table.item(selected_row, column)
+            if item is None or item.text() == item.data(Qt.ItemDataRole.UserRole):
+                continue
+            dados_alterados[campo] = item.text()
+
+        if not dados_alterados:
+            return
+
+        if self.database.update_empresa(dados_alterados, cnpj_original):
+            for column in range(self.table.columnCount()):
+                item = self.table.item(selected_row, column)
+                if item is not None:
+                    item.setData(Qt.ItemDataRole.UserRole, item.text())
 
     def gerar_excel(self):
         row_count = self.table.rowCount()
@@ -135,8 +154,7 @@ class MainWindow(QMainWindow):
                 else:
                     register.append("") 
             row_data.append(register)  
-        print(row_data)
-        # exportar_excel(row_data)
+        export_excel(row_data)
 
 
 

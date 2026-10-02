@@ -3,8 +3,8 @@ wb = openpyxl.Workbook()
 
 ws = wb.active
 
-def exportar_excel(list):
+def export_excel(list):
     for i in list:
         ws.append(i)
-    wb.save('sample.xlsl')
+    wb.save('./arquivosExcel/sample.xlsl')
 
