@@ -1,22 +1,21 @@
 import requests
-import time
 
 def request_cnpj(cnpj):
+    url = f"https://receitaws.com.br/v1/cnpj/{cnpj}"
+    querystring = {
+        "token" : "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX",
+        "plugin" : "RF"
+    }
     try:
-        url = f"https://receitaws.com.br/v1/cnpj/{cnpj}"
-        querystring = {
-            "token" : "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX",
-            "plugin" : "RF"
-        }    
-        res = requests.get(url, params=querystring)
-        res.raise_for_status()
-        return res.json()
-    except requests.exceptions.RequestException as error:
+        res = requests.get(url, params=querystring, timeout=10)
         if res.status_code == 429:
-            print("Limite atingido. Aguardando para tentar novamente...")
-            time.sleep(20)  # Espera 20 segundos
-            return res.json()
-        else:
-            print(f'{error}')
+            return (False, 'a api de requisições tem um limite de 3 autocomplete por minuto, aguarde um instante e tente novamente')
+        res.raise_for_status()
+        dados = res.json()
+    except requests.exceptions.RequestException as error:
+        return (False, f'falha na requisição do cnpj: {error}')
 
-    
+    if dados.get('status') == 'ERROR':
+        return (False, dados.get('message', 'a api retornou um erro para este cnpj'))
+
+    return (True, dados)

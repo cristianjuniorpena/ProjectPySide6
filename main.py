@@ -1,6 +1,7 @@
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QApplication, QMainWindow, QTableWidgetItem
+from PySide6.QtWidgets import (QApplication, QMainWindow, QMessageBox,
+                                QTableWidgetItem)
 from ui_main import Ui_MainWindow
 from excel import export_excel
 from requisicoes import request_cnpj
@@ -50,17 +51,20 @@ class MainWindow(QMainWindow):
         cnpj = self.ui.txt_cnpj.text()
         new_cnpj = cnpj.replace(' ', '').replace('-', '').replace('.', '').replace('/', '')
         if len(new_cnpj) == 14:
-            request = request_cnpj(new_cnpj)
-            self.ui.txt_nome_empresa.setText(request['nome'])
-            self.ui.txt_logradouro.setText(request['logradouro'])
-            self.ui.txt_numero.setText(request['numero'])
-            self.ui.txt_complemento.setText(request['complemento'])
-            self.ui.txt_bairro.setText(request['bairro'])
-            self.ui.txt_municipio.setText(request['municipio'])
-            self.ui.txt_uf.setText(request['uf'])
-            self.ui.txt_cep.setText(request['cep'])
-            self.ui.txt_telefone.setText(request['telefone'])
-            self.ui.txt_email.setText(request['email'])
+            ok, dados = request_cnpj(new_cnpj)
+            if not ok:
+                QMessageBox.warning(self, 'Auto-complete', dados)
+                return
+            self.ui.txt_nome_empresa.setText(dados.get('nome', ''))
+            self.ui.txt_logradouro.setText(dados.get('logradouro', ''))
+            self.ui.txt_numero.setText(dados.get('numero', ''))
+            self.ui.txt_complemento.setText(dados.get('complemento', ''))
+            self.ui.txt_bairro.setText(dados.get('bairro', ''))
+            self.ui.txt_municipio.setText(dados.get('municipio', ''))
+            self.ui.txt_uf.setText(dados.get('uf', ''))
+            self.ui.txt_cep.setText(dados.get('cep', ''))
+            self.ui.txt_telefone.setText(dados.get('telefone', ''))
+            self.ui.txt_email.setText(dados.get('email', ''))
 
 
     def insert_qt_rows(self, *valores):
@@ -89,12 +93,17 @@ class MainWindow(QMainWindow):
             self.ui.txt_email.text()
         ]
 
-        self.database.insert_empresa(*entries)
-        self.insert_qt_rows(*entries)
+        ok, mensagem = self.database.insert_empresa(*entries)
+        if ok:
+            self.insert_qt_rows(*entries)
+        else:
+            QMessageBox.critical(self, 'Erro ao inserir', mensagem)
 
     def show_registers_from_database(self):
-        registers = self.database.select_empresa()
+        ok, registers = self.database.select_empresa()
         self.table.setRowCount(0)
+        if not ok:
+            return
         for i in registers:
             self.insert_qt_rows(*i)
 
@@ -103,8 +112,11 @@ class MainWindow(QMainWindow):
         if selected_row < 0:
             return
         cnpj = self.table.item(selected_row, 0).data(Qt.ItemDataRole.UserRole)
-        self.database.delete_empresa(cnpj)
-        self.table.removeRow(selected_row)
+        ok, mensagem = self.database.delete_empresa(cnpj)
+        if ok:
+            self.table.removeRow(selected_row)
+        else:
+            QMessageBox.critical(self, 'Erro ao excluir', mensagem)
 
     def update_database(self):
         selected_row = self.table.currentRow()
@@ -125,11 +137,14 @@ class MainWindow(QMainWindow):
         if not dados_alterados:
             return
 
-        if self.database.update_empresa(dados_alterados, cnpj_original):
+        ok, mensagem = self.database.update_empresa(dados_alterados, cnpj_original)
+        if ok:
             for column in range(self.table.columnCount()):
                 item = self.table.item(selected_row, column)
                 if item is not None:
                     item.setData(Qt.ItemDataRole.UserRole, item.text())
+        else:
+            QMessageBox.critical(self, 'Erro ao alterar', mensagem)
 
     def gerar_excel(self):
         row_count = self.table.rowCount()

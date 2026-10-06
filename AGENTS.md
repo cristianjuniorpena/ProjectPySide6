@@ -17,6 +17,17 @@
 -de ideias do que adicionar ao projeto, isto considera formas de deixar o código mais enxuto, sugestões de praticidade ou segurança, também planejo usar um tempo para analisar o nome de variaveis, funcoes, classes, etc. Visando melhorar a minha ideia de boas práticas
 
 ##HISTÓRICO DE ALTERAÇÕES:
+###[06/10/2026] - Retornos (True/False, mensagem) em toda a camada de dados
+-novo contrato da camada de dados: todos os métodos de database.py e o request_cnpj de requisicoes.py retornam tupla (True/False, mensagem ou dados) — a interface só altera a UI quando recebe True, seguindo o mesmo padrão que update_empresa/update_database já usavam
+-database.py: criado o helper _fechar() com guarda em cursor/connection; ele substitui o finally repetido 4× e corrige o AttributeError que mascarava o erro original quando connect() falhava (sem isso, nenhum return False chegava à UI)
+-database.py: insert_empresa, delete_empresa e select_empresa passaram a retornar a tupla; selectEmpresa em falha agora retorna (False, msg) em vez de None (o for em show_registers_from_database quebrava); update_empresa migrado de True/False puro para a tupla
+-main.py: insert_row_from_qt, delete_row e update_database agora desempacotam a tupla e só mexem na tabela em sucesso; em falha mostram QMessageBox.critical com o motivo — encerra o bug da linha inserida na table sem estar no banco e do delete/update que alteravam a UI mesmo com erro no MySQL
+-main.py: show_registers_from_database em falha mantém a tabela vazia sem modal (ela é re-invocada a cada currentChanged do tabWidget, um modal repetiria a cada troca de aba); show_registers mantém setRowCount(0) antes de checar o ok para não deixar dados velhos
+-main.py: auto_complete desempacota a tupla do request; em falha mostra QMessageBox.warning (é o aviso do limite de 3/min) e retorna sem preencher; os campos passam a usar .get(campo, '') para não quebrar se a API omitir telefone/email
+-requisicoes.py: reescrito — fim do UnboundLocalError (res agora só é referenciado dentro do try; o 429 é detectado por status_code direto), removido o time.sleep(20) que congelava a UI, adicionado timeout=10, checagem do status ERROR no corpo da resposta 200 e removido o import time
+-excel.py: parâmetro list renomeado para linhas (não sombrea mais o built-in) e extensão corrigida de .xlsl para .xlsx; .gitignore perdeu a linha sample.xlsl obsoleta (o *.xlsx já cobre)
+-testes feitos em 06/10/2026 com stubs (sem tocar em MySQL/API real): connect() falhando retorna (False, msg) sem AttributeError, _fechar zera os atributos, 429/ConnectionError/sucesso/ERROR-no-corpo todos retornam tupla correta
+-padrão arquitetural estabelecido: UI nunca altera a tabela antes de confirmar com o banco — toda nova ação (importar excel, etc.) deve seguir o mesmo contrato da tupla
 ###[06/10/2026] - Limpeza, nomes PEP8 e correções de UX (tópicos 14-18 do importante.txt)
 -.gitignore: removidos `ui_main.py`, `myrecursos_rc.py` e `agents.md` — os dois primeiros são gerados a partir de main_window.ui (pyside6-uic / pyside6-rcc) e precisam ir pro GitHub para um clone limpo rodar; o terceiro estava errado (o arquivo real é AGENTS.md maiúsculo, e no Windows o gitignore sem caixa também escondia o AGENTS.md correto)
 -database.py: `acess` renomeado para `acesso` (PEP8); removido o método `disconnect`, que nunca era chamado (código morto)

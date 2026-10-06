@@ -5,6 +5,6 @@ __pycache__/
 *.pyc
 
 *.xlsx
-sample.xlsl
+arquivosExcel/
 
 importante.txt
