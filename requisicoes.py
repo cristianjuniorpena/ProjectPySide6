@@ -1,7 +1,7 @@
 import requests
 import time
 
-def requestCNPJ(cnpj):
+def request_cnpj(cnpj):
     try:
         url = f"https://receitaws.com.br/v1/cnpj/{cnpj}"
         querystring = {

@@ -2,7 +2,7 @@ import mysql.connector
 
 class Database():
     def __init__(self, host, port, user, password):
-        self.acess = {
+        self.acesso = {
             'host': host,
             'port': port,
             'user': user,
@@ -13,19 +13,14 @@ class Database():
 
     def connect(self):
         self.connection = mysql.connector.connect(
-            host=self.acess['host'],
-            port=self.acess['port'],
-            user=self.acess['user'],
-            password=self.acess['password']
+            host=self.acesso['host'],
+            port=self.acesso['port'],
+            user=self.acesso['user'],
+            password=self.acesso['password']
         )
         self.cursor = self.connection.cursor()
         self.cursor.execute("use empresas")
         self.connection.commit()
-
-    def disconnect(self):
-        self.cursor.close()
-        self.connection.close()
-        print('conexão encerrada')
 
     def select_empresa(self):
         try:
@@ -69,10 +64,8 @@ class Database():
             valores = list(dados_alterados.values()) + [cnpj]
             self.cursor.execute(f'UPDATE empresa SET {campos} WHERE cnpj = %s', valores)
             self.connection.commit()
-            print('dados alterados com sucesso')
             return True
         except mysql.connector.Error as error:
-            print(f'erro na alteração de dados {error}')
             return False
         finally:
             self.cursor.close()

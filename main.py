@@ -1,10 +1,11 @@
-from PySide6.QtCore import QCoreApplication, Qt
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication, QMainWindow, QTableWidgetItem
 from ui_main import Ui_MainWindow
 from excel import export_excel
-from requisicoes import requestCNPJ
+from requisicoes import request_cnpj
 from database import Database
+import html
 import sys
 
 CAMPOS = ('cnpj', 'nome_empresa', 'logradouro', 'numero', 'complemento',
@@ -16,7 +17,7 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()   #atributo relacionado as alterações internas do sistema
         self.ui.setupUi(self)
         self.setWindowTitle("SysDev - Sistema de cadastro de empresas")
-        appIcon = QIcon(u"logo_sysdev_240px.png")
+        appIcon = QIcon(u"./imgs/logo_sysdev_240px.png")
         self.setWindowIcon(appIcon)
         self.table = self.ui.Table
         self.database = Database('localhost', 3306, 'root', '')
@@ -32,7 +33,7 @@ class MainWindow(QMainWindow):
         self.ui.btnAdicionar.clicked.connect(self.insert_row_from_qt)
         self.ui.btnExcluir.clicked.connect(self.delete_row)
         self.ui.btnExcel.clicked.connect(self.gerar_excel)
-        self.ui.btnAlterar.clicked.connect(self.alter_database)
+        self.ui.btnAlterar.clicked.connect(self.update_database)
 
         self.ui.tabWidget.currentChanged.connect(self.show_registers_from_database)
 
@@ -41,14 +42,15 @@ class MainWindow(QMainWindow):
 
 
     def alterar_nome_empresa(self):
-        texto_rico = f'<html><head/><body><p align="center"><span style=" font-size:16pt; font-weight:700;">{self.ui.txt_nome_empresa.text()}</span></p></body></html>'
+        nome_escapado = html.escape(self.ui.txt_nome_empresa.text())
+        texto_rico = f'<html><head/><body><p align="center"><span style=" font-size:16pt; font-weight:700;">{nome_escapado}</span></p></body></html>'
         self.ui.nomeEmpresa.setText(texto_rico)
 
     def auto_complete(self):
         cnpj = self.ui.txt_cnpj.text()
         new_cnpj = cnpj.replace(' ', '').replace('-', '').replace('.', '').replace('/', '')
         if len(new_cnpj) == 14:
-            request = requestCNPJ(new_cnpj)
+            request = request_cnpj(new_cnpj)
             self.ui.txt_nome_empresa.setText(request['nome'])
             self.ui.txt_logradouro.setText(request['logradouro'])
             self.ui.txt_numero.setText(request['numero'])
@@ -61,7 +63,7 @@ class MainWindow(QMainWindow):
             self.ui.txt_email.setText(request['email'])
 
 
-    def insert_qtrows(self, *valores):
+    def insert_qt_rows(self, *valores):
         row_index = self.table.rowCount()
         self.table.insertRow(row_index)
 
@@ -88,13 +90,13 @@ class MainWindow(QMainWindow):
         ]
 
         self.database.insert_empresa(*entries)
-        self.insert_qtrows(*entries)
+        self.insert_qt_rows(*entries)
 
     def show_registers_from_database(self):
         registers = self.database.select_empresa()
         self.table.setRowCount(0)
         for i in registers:
-            self.insert_qtrows(*i)
+            self.insert_qt_rows(*i)
 
     def delete_row(self):
         selected_row = self.table.currentRow()
@@ -104,7 +106,7 @@ class MainWindow(QMainWindow):
         self.database.delete_empresa(cnpj)
         self.table.removeRow(selected_row)
 
-    def alter_database(self):
+    def update_database(self):
         selected_row = self.table.currentRow()
         if selected_row < 0:
             return
@@ -133,16 +135,8 @@ class MainWindow(QMainWindow):
         row_count = self.table.rowCount()
         column_count = self.table.columnCount()
         row_data = []
-
-        cabecalho = []
-        for column in range(column_count):
-            item = self.table.horizontalHeaderItem(column)
-            if item is not None:
-                cabecalho.append(item.text())
-            else:
-                cabecalho.append(f"Coluna {column}")
-        
-        row_data.append(cabecalho)
+  
+        row_data.append(CAMPOS)
 
         for row in range(row_count):
             register = []
@@ -163,5 +157,3 @@ if __name__ == "__main__":
     window = MainWindow()
     window.show()
     sys.exit(app.exec())
-
-    # if self.ui.tabWidget.indexOf(self.ui.tabWidget.currentWidget) == 1 else None
