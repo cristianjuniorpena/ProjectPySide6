@@ -16,6 +16,22 @@
 -o projeto já está upado no github, com os devidos cuidados com o requirements.txt e o .gitignore ignorando o venv e outros arquivos
 -de ideias do que adicionar ao projeto, isto considera formas de deixar o código mais enxuto, sugestões de praticidade ou segurança, também planejo usar um tempo para analisar o nome de variaveis, funcoes, classes, etc. Visando melhorar a minha ideia de boas práticas
 
+##ALTERAÇÕES ENVOLVENDO O ENV (contexto para próximas conversas):
+-o projeto foi reposicionado como ferramenta de uso, com público recrutador + usuário técnico-operacional. consequência deliberada: erros do MySQL e da API aparecem crus na interface, sem "tradução", porque esse público sabe lê-los
+-toda configuração sensível fica no .env (nunca versionado); o .env.example é versionado e é a referência das variáveis
+-variáveis do .env: DB_HOST, DB_PORT, DB_USER, DB_PASSWORD (opcional), DB_NAME e RECEITAWS_TOKEN. db_table NÃO é variável: o nome da tabela é fixo em 'empresa' no código e documentado no README
+-fluxo de carga: .env -> config.py (load_dotenv + Settings.from_env) -> main.py injeta os parâmetros -> Database/request_cnpj. a camada de dados NÃO lê o .env (preserva a testabilidade com stubs)
+-conexão MySQL: Database recebe database= e usa connection_timeout=5; não existe mais o 'use empresas' hardcoded
+-bootstrap do banco é híbrido: schema.sql é a fonte do DDL da tabela e init_db.py cria o banco (a partir do DB_NAME) e aplica o schema. requisito: MySQL 8.0.16+ (CHECK com REGEXP) e o banco precisa existir antes de abrir o app (ou rodar init_db.py)
+-constraints do banco: chk_cnpj (14 dígitos), chk_cep (8 dígitos) e chk_uf (2 maiúsculas) — por isso o main.py faz uf.upper() antes de inserir
+-dependências: validate-docbr (estava ausente mas era importada) e python-dotenv foram adicionadas ao requirements.txt; pandas e numpy foram removidas
+-trabalho feito na branch feat/config-env-readme (já no GitHub), ainda NÃO mergeada na main
+
+##PENDÊNCIAS E PRÓXIMOS PASSOS (ENV e relacionados):
+-python-dateutil, six e tzdata eram dependências do pandas e ficaram órfãs no requirements.txt — decidir se remove
+-testar de verdade contra o MySQL/API (a execução real não foi testada nesta sessão): rodar init_db.py e o fluxo completo de CRUD
+-sugestões ainda não implementadas: busca/filtro na tabela (QSortFilterProxyModel), auto-complete assíncrono (QThread — hoje o requests roda na thread da UI e congela a janela), autocomplete de CEP via ViaCEP, confirmação antes de Excluir/Alterar, importar Excel, validação de CNPJ/CEP/e-mail antes do insert e export com QFileDialog + nome com data (hoje sobrescreve sample.xlsx em caminho relativo)
+
 ##HISTÓRICO DE ALTERAÇÕES:
 ###[06/10/2026] - Retornos (True/False, mensagem) em toda a camada de dados
 -novo contrato da camada de dados: todos os métodos de database.py e o request_cnpj de requisicoes.py retornam tupla (True/False, mensagem ou dados) — a interface só altera a UI quando recebe True, seguindo o mesmo padrão que update_empresa/update_database já usavam
