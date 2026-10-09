@@ -1,16 +1,18 @@
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import (QApplication, QMainWindow, QMessageBox,
-                                QTableWidgetItem)
+from PySide6.QtWidgets import (QApplication, QMainWindow, QMessageBox, QTableWidgetItem)
 from ui_main import Ui_MainWindow
 from excel import export_excel
 from requisicoes import request_cnpj
 from database import Database
+from config import Settings
 import html
 import sys
+from validate_docbr import CNPJ
 
 CAMPOS = ('cnpj', 'nome_empresa', 'logradouro', 'numero', 'complemento',
           'bairro', 'municipio', 'uf', 'cep', 'telefone', 'email')
+VALIDATE = CNPJ()
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -21,7 +23,15 @@ class MainWindow(QMainWindow):
         appIcon = QIcon(u"./imgs/logo_sysdev_240px.png")
         self.setWindowIcon(appIcon)
         self.table = self.ui.Table
-        self.database = Database('localhost', 3306, 'root', '')
+        self.settings = Settings.from_env()
+        self._aviso_conexao_mostrado = False
+        self.database = Database(
+            self.settings.db_host,
+            self.settings.db_port,
+            self.settings.db_user,
+            self.settings.db_password,
+            self.settings.db_name,
+        )
         self.show_registers_from_database()
 
         #botões para alteração de páginas no tableWidget
@@ -50,8 +60,8 @@ class MainWindow(QMainWindow):
     def auto_complete(self):
         cnpj = self.ui.txt_cnpj.text()
         new_cnpj = cnpj.replace(' ', '').replace('-', '').replace('.', '').replace('/', '')
-        if len(new_cnpj) == 14:
-            ok, dados = request_cnpj(new_cnpj)
+        if len(new_cnpj) == 14 and VALIDATE.validate(new_cnpj):
+            ok, dados = request_cnpj(new_cnpj, self.settings.receitaws_token)
             if not ok:
                 QMessageBox.warning(self, 'Auto-complete', dados)
                 return
@@ -87,7 +97,7 @@ class MainWindow(QMainWindow):
             self.ui.txt_complemento.text(),
             self.ui.txt_bairro.text(),
             self.ui.txt_municipio.text(),
-            self.ui.txt_uf.text(),
+            self.ui.txt_uf.text().upper(),
             self.ui.txt_cep.text().replace('-', '').replace(' ', '').replace('.', ''),
             self.ui.txt_telefone.text(),
             self.ui.txt_email.text()
@@ -103,6 +113,13 @@ class MainWindow(QMainWindow):
         ok, registers = self.database.select_empresa()
         self.table.setRowCount(0)
         if not ok:
+            if not self._aviso_conexao_mostrado:
+                self._aviso_conexao_mostrado = True
+                QMessageBox.warning(
+                    self,
+                    'Conexão com o banco',
+                    'Não foi possível conectar ao MySQL. Verifique o .env e consulte o README.'
+                )
             return
         for i in registers:
             self.insert_qt_rows(*i)

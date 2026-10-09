@@ -265,7 +265,7 @@ class Ui_MainWindow(object):
 
         self.label_12 = QLabel(self.frame_4)
         self.label_12.setObjectName(u"label_12")
-        self.label_12.setAlignment(Qt.AlignmentFlag.AlignBottom|Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft)
+        self.label_12.setAlignment(Qt.AlignmentFlag.AlignBottom|Qt.AlignmentFlag.AlignHCenter)
         self.label_12.setWordWrap(True)
 
         self.gridLayout.addWidget(self.label_12, 2, 0, 1, 3)
@@ -420,7 +420,7 @@ class Ui_MainWindow(object):
 
         self.toolBox.setCurrentIndex(0)
         self.Pages.setCurrentIndex(1)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -450,7 +450,7 @@ class Ui_MainWindow(object):
         self.txt_email.setPlaceholderText(QCoreApplication.translate("MainWindow", u"email", None))
         self.txt_cnpj.setPlaceholderText(QCoreApplication.translate("MainWindow", u"CNPJ", None))
         self.txt_municipio.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Munic\u00edpio", None))
-        self.label_12.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:700;\">insira primeiro os conte\u00fados de CNPJ e CEP para o auto-preenchimento.</span></p><p><span style=\" color:#ff0000;\">*as informa\u00e7\u00f5es do auto-preenchimento podem estar desatualizadas, verifique sua veracidade e use este link para atualizar as informa\u00e7\u00f5es, se necess\u00e1rio:</span> https://viacep.com.br/cep/</p></body></html>", None))
+        self.label_12.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:700;\">Insira primeiramente o CNPJ para realizar o Auto-preenchimento</span></p></body></html>", None))
         self.btnAdicionar.setText(QCoreApplication.translate("MainWindow", u"Adicionar", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QCoreApplication.translate("MainWindow", u"Cadastro", None))
         self.label_5.setText(QCoreApplication.translate("MainWindow", u"EMPRESAS", None))

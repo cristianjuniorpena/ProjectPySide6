@@ -1,9 +1,9 @@
 import requests
 
-def request_cnpj(cnpj):
+def request_cnpj(cnpj, token):
     url = f"https://receitaws.com.br/v1/cnpj/{cnpj}"
     querystring = {
-        "token" : "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX",
+        "token" : token,
         "plugin" : "RF"
     }
     try:

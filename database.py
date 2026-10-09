@@ -1,12 +1,13 @@
 import mysql.connector
 
 class Database():
-    def __init__(self, host, port, user, password):
+    def __init__(self, host, port, user, password, database):
         self.acesso = {
             'host': host,
             'port': port,
             'user': user,
             'password': password,
+            'database': database,
         }
         self.connection = None
         self.cursor = None
@@ -16,11 +17,11 @@ class Database():
             host=self.acesso['host'],
             port=self.acesso['port'],
             user=self.acesso['user'],
-            password=self.acesso['password']
+            password=self.acesso['password'],
+            database=self.acesso['database'],
+            connection_timeout=5
         )
         self.cursor = self.connection.cursor()
-        self.cursor.execute("use empresas")
-        self.connection.commit()
 
     def _fechar(self):
         if self.cursor:
