@@ -445,10 +445,17 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="2" column="0" colspan="3">
+                     <item row="2" column="2">
+                      <widget class="QPushButton" name="btn_limpar">
+                       <property name="text">
+                        <string>Limpar campos</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="0" colspan="2">
                       <widget class="QLabel" name="label_12">
                        <property name="text">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Insira primeiramente o CNPJ para realizar o Auto-preenchimento&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Insira primeiramente o CNPJ para realizar o Auto-preenchimento,  a api possui um limite de 3 requisições cnpj por minuto&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                        </property>
                        <property name="alignment">
                         <set>Qt::AlignmentFlag::AlignBottom|Qt::AlignmentFlag::AlignHCenter</set>

@@ -263,12 +263,17 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addWidget(self.txt_municipio, 6, 0, 1, 1)
 
+        self.btn_limpar = QPushButton(self.frame_4)
+        self.btn_limpar.setObjectName(u"btn_limpar")
+
+        self.gridLayout.addWidget(self.btn_limpar, 2, 2, 1, 1)
+
         self.label_12 = QLabel(self.frame_4)
         self.label_12.setObjectName(u"label_12")
         self.label_12.setAlignment(Qt.AlignmentFlag.AlignBottom|Qt.AlignmentFlag.AlignHCenter)
         self.label_12.setWordWrap(True)
 
-        self.gridLayout.addWidget(self.label_12, 2, 0, 1, 3)
+        self.gridLayout.addWidget(self.label_12, 2, 0, 1, 2)
 
 
         self.verticalLayout_10.addWidget(self.frame_4)
@@ -450,7 +455,8 @@ class Ui_MainWindow(object):
         self.txt_email.setPlaceholderText(QCoreApplication.translate("MainWindow", u"email", None))
         self.txt_cnpj.setPlaceholderText(QCoreApplication.translate("MainWindow", u"CNPJ", None))
         self.txt_municipio.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Munic\u00edpio", None))
-        self.label_12.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:700;\">Insira primeiramente o CNPJ para realizar o Auto-preenchimento</span></p></body></html>", None))
+        self.btn_limpar.setText(QCoreApplication.translate("MainWindow", u"Limpar campos", None))
+        self.label_12.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:700;\">Insira primeiramente o CNPJ para realizar o Auto-preenchimento,  a api possui um limite de 3 requisi\u00e7\u00f5es cnpj por minuto</span></p></body></html>", None))
         self.btnAdicionar.setText(QCoreApplication.translate("MainWindow", u"Adicionar", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QCoreApplication.translate("MainWindow", u"Cadastro", None))
         self.label_5.setText(QCoreApplication.translate("MainWindow", u"EMPRESAS", None))

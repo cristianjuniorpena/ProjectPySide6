@@ -51,6 +51,8 @@ class MainWindow(QMainWindow):
         self.ui.txt_cnpj.textChanged.connect(self.auto_complete)
         self.ui.txt_nome_empresa.textChanged.connect(self.alterar_nome_empresa)
 
+        self.ui.btn_limpar.clicked.connect(self.clear_field)
+
 
     def alterar_nome_empresa(self):
         nome_escapado = html.escape(self.ui.txt_nome_empresa.text())
@@ -75,6 +77,18 @@ class MainWindow(QMainWindow):
             self.ui.txt_cep.setText(dados.get('cep', ''))
             self.ui.txt_telefone.setText(dados.get('telefone', ''))
             self.ui.txt_email.setText(dados.get('email', ''))
+
+    def clear_field(self):
+        self.ui.txt_nome_empresa.setText('')
+        self.ui.txt_logradouro.setText('')
+        self.ui.txt_numero.setText('')
+        self.ui.txt_complemento.setText('')
+        self.ui.txt_bairro.setText('')
+        self.ui.txt_municipio.setText('')
+        self.ui.txt_uf.setText('')
+        self.ui.txt_cep.setText('')
+        self.ui.txt_telefone.setText('')
+        self.ui.txt_email.setText('')
 
 
     def insert_qt_rows(self, *valores):
