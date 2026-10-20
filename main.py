@@ -2,15 +2,15 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (QApplication, QMainWindow, QMessageBox, QTableWidgetItem)
 from ui_main import Ui_MainWindow
-from excel import export_excel
-from requisicoes import request_cnpj
+from exportExcel import export_to_excel
+from requestCNPJ import request_cnpj
 from database import Database
 from config import Settings
 import html
 import sys
 from validate_docbr import CNPJ
 
-CAMPOS = ('cnpj', 'nome_empresa', 'logradouro', 'numero', 'complemento',
+FIELDS = ('cnpj', 'nome_empresa', 'logradouro', 'numero', 'complemento',
           'bairro', 'municipio', 'uf', 'cep', 'telefone', 'email')
 VALIDATE = CNPJ()
 
@@ -43,40 +43,40 @@ class MainWindow(QMainWindow):
         #botões para as alterações principais da tabela
         self.ui.btnAdicionar.clicked.connect(self.insert_row_from_qt)
         self.ui.btnExcluir.clicked.connect(self.delete_row)
-        self.ui.btnExcel.clicked.connect(self.gerar_excel)
-        self.ui.btnAlterar.clicked.connect(self.update_database)
+        self.ui.btnExcel.clicked.connect(self.generate_excel)
+        self.ui.btnAlterar.clicked.connect(self.update_row)
 
         self.ui.tabWidget.currentChanged.connect(self.show_registers_from_database)
 
         self.ui.txt_cnpj.textChanged.connect(self.auto_complete)
-        self.ui.txt_nome_empresa.textChanged.connect(self.alterar_nome_empresa)
+        self.ui.txt_nome_empresa.textChanged.connect(self.change_empresa_name)
 
         self.ui.btn_limpar.clicked.connect(self.clear_field)
 
 
-    def alterar_nome_empresa(self):
-        nome_escapado = html.escape(self.ui.txt_nome_empresa.text())
-        texto_rico = f'<html><head/><body><p align="center"><span style=" font-size:16pt; font-weight:700;">{nome_escapado}</span></p></body></html>'
-        self.ui.nomeEmpresa.setText(texto_rico)
+    def change_empresa_name(self):
+        escaped_name = html.escape(self.ui.txt_nome_empresa.text())
+        rich_text = f'<html><head/><body><p align="center"><span style=" font-size:16pt; font-weight:700;">{escaped_name}</span></p></body></html>'
+        self.ui.nomeEmpresa.setText(rich_text)
 
     def auto_complete(self):
         cnpj = self.ui.txt_cnpj.text()
         new_cnpj = cnpj.replace(' ', '').replace('-', '').replace('.', '').replace('/', '')
         if len(new_cnpj) == 14 and VALIDATE.validate(new_cnpj):
-            ok, dados = request_cnpj(new_cnpj, self.settings.receitaws_token)
+            ok, data = request_cnpj(new_cnpj, self.settings.receitaws_token)
             if not ok:
-                QMessageBox.warning(self, 'Auto-complete', dados)
+                QMessageBox.warning(self, 'Auto-complete', data)
                 return
-            self.ui.txt_nome_empresa.setText(dados.get('nome', ''))
-            self.ui.txt_logradouro.setText(dados.get('logradouro', ''))
-            self.ui.txt_numero.setText(dados.get('numero', ''))
-            self.ui.txt_complemento.setText(dados.get('complemento', ''))
-            self.ui.txt_bairro.setText(dados.get('bairro', ''))
-            self.ui.txt_municipio.setText(dados.get('municipio', ''))
-            self.ui.txt_uf.setText(dados.get('uf', ''))
-            self.ui.txt_cep.setText(dados.get('cep', ''))
-            self.ui.txt_telefone.setText(dados.get('telefone', ''))
-            self.ui.txt_email.setText(dados.get('email', ''))
+            self.ui.txt_nome_empresa.setText(data.get('nome', ''))
+            self.ui.txt_logradouro.setText(data.get('logradouro', ''))
+            self.ui.txt_numero.setText(data.get('numero', ''))
+            self.ui.txt_complemento.setText(data.get('complemento', ''))
+            self.ui.txt_bairro.setText(data.get('bairro', ''))
+            self.ui.txt_municipio.setText(data.get('municipio', ''))
+            self.ui.txt_uf.setText(data.get('uf', ''))
+            self.ui.txt_cep.setText(data.get('cep', ''))
+            self.ui.txt_telefone.setText(data.get('telefone', ''))
+            self.ui.txt_email.setText(data.get('email', ''))
 
     def clear_field(self):
         self.ui.txt_nome_empresa.setText('')
@@ -117,11 +117,11 @@ class MainWindow(QMainWindow):
             self.ui.txt_email.text()
         ]
 
-        ok, mensagem = self.database.insert_empresa(*entries)
+        ok, message = self.database.insert_empresa(*entries)
         if ok:
             self.insert_qt_rows(*entries)
         else:
-            QMessageBox.critical(self, 'Erro ao inserir', mensagem)
+            QMessageBox.critical(self, 'Erro ao inserir', message)
 
     def show_registers_from_database(self):
         ok, registers = self.database.select_empresa()
@@ -143,46 +143,46 @@ class MainWindow(QMainWindow):
         if selected_row < 0:
             return
         cnpj = self.table.item(selected_row, 0).data(Qt.ItemDataRole.UserRole)
-        ok, mensagem = self.database.delete_empresa(cnpj)
+        ok, message = self.database.delete_empresa(cnpj)
         if ok:
             self.table.removeRow(selected_row)
         else:
-            QMessageBox.critical(self, 'Erro ao excluir', mensagem)
+            QMessageBox.critical(self, 'Erro ao excluir', message)
 
-    def update_database(self):
+    def update_row(self):
         selected_row = self.table.currentRow()
         if selected_row < 0:
             return
 
         cnpj_original = self.table.item(selected_row, 0).data(Qt.ItemDataRole.UserRole)
-        dados_alterados = {}
+        data_changed = {}
 
-        for column, campo in enumerate(CAMPOS):
+        for column, campo in enumerate(FIELDS):
             if column == 0:
                 continue
             item = self.table.item(selected_row, column)
             if item is None or item.text() == item.data(Qt.ItemDataRole.UserRole):
                 continue
-            dados_alterados[campo] = item.text()
+            data_changed[campo] = item.text()
 
-        if not dados_alterados:
+        if not data_changed:
             return
 
-        ok, mensagem = self.database.update_empresa(dados_alterados, cnpj_original)
+        ok, message = self.database.update_empresa(data_changed, cnpj_original)
         if ok:
             for column in range(self.table.columnCount()):
                 item = self.table.item(selected_row, column)
                 if item is not None:
                     item.setData(Qt.ItemDataRole.UserRole, item.text())
         else:
-            QMessageBox.critical(self, 'Erro ao alterar', mensagem)
+            QMessageBox.critical(self, 'Erro ao alterar', message)
 
-    def gerar_excel(self):
+    def generate_excel(self):
         row_count = self.table.rowCount()
         column_count = self.table.columnCount()
         row_data = []
   
-        row_data.append(CAMPOS)
+        row_data.append(FIELDS)
 
         for row in range(row_count):
             register = []
@@ -194,7 +194,15 @@ class MainWindow(QMainWindow):
                 else:
                     register.append("") 
             row_data.append(register)  
-        export_excel(row_data)
+        ok, message = export_to_excel(row_data)
+
+        if not ok: 
+            QMessageBox.warning(self, 'Erro na geração excel',message)
+            return
+
+        QMessageBox.information(self, 'Sucesso', message)
+        
+
 
 
 

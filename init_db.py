@@ -7,7 +7,7 @@ import mysql.connector
 from config import Settings
 
 SCHEMA = Path(__file__).with_name('schema.sql')
-NOME_BANCO_VALIDO = re.compile(r'^[A-Za-z0-9_]+$')
+VALID_DATABASE_NAME = re.compile(r'^[A-Za-z0-9_]+$')
 
 
 def main():
@@ -17,7 +17,7 @@ def main():
         print(f'Erro de configuração: {error}')
         return 1
 
-    if not NOME_BANCO_VALIDO.fullmatch(settings.db_name):
+    if not VALID_DATABASE_NAME.fullmatch(settings.db_name):
         print(f'Nome de banco inválido no .env: {settings.db_name}')
         return 1
 

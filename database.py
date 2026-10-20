@@ -23,7 +23,7 @@ class Database():
         )
         self.cursor = self.connection.cursor()
 
-    def _fechar(self):
+    def _close(self):
         if self.cursor:
             self.cursor.close()
             self.cursor = None
@@ -40,7 +40,7 @@ class Database():
             print(f'erro na busca de dados {error}')
             return (False, f'erro na busca de dados: {error}')
         finally:
-            self._fechar()
+            self._close()
 
     def insert_empresa(self, cnpj, nome_empresa, logradouro, numero, complemento, bairro, municipio, uf, cep, telefone, email):
         try:
@@ -52,7 +52,7 @@ class Database():
             print(f'erro na inserção de dados {error}')
             return (False, f'erro na inserção de dados: {error}')
         finally:
-            self._fechar()
+            self._close()
 
     def delete_empresa(self, cnpj):
         try:
@@ -64,7 +64,7 @@ class Database():
             print(f'erro na exclusão de dados {error}')
             return (False, f'erro na exclusão de dados: {error}')
         finally:
-            self._fechar()
+            self._close()
 
     def update_empresa(self, dados_alterados, cnpj):
         try:
@@ -78,4 +78,4 @@ class Database():
             print(f'erro na alteração de dados {error}')
             return (False, f'erro na alteração de dados: {error}')
         finally:
-            self._fechar()
+            self._close()

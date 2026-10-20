@@ -19,15 +19,15 @@ class Settings:
 
     @classmethod
     def from_env(cls, require_token=True):
-        obrigatorias = ('DB_HOST', 'DB_PORT', 'DB_USER', 'DB_NAME')
+        mandatory_database_fields = ('DB_HOST', 'DB_PORT', 'DB_USER', 'DB_NAME')
         if require_token:
-            obrigatorias += ('RECEITAWS_TOKEN',)
+            mandatory_database_fields += ('RECEITAWS_TOKEN',)
 
-        faltantes = [var for var in obrigatorias if not os.getenv(var)]
-        if faltantes:
+        missing_fields = [var for var in mandatory_database_fields if not os.getenv(var)]
+        if missing_fields:
             raise RuntimeError(
                 'Variaveis de ambiente ausentes no .env: '
-                + ', '.join(faltantes)
+                + ', '.join(missing_fields)
                 + '. Copie o .env.example e preencha os valores.'
             )
 
