@@ -2,7 +2,7 @@
 
 Aplicação desktop em Python + PySide6 (Qt) para cadastro e gerência de empresas a partir do CNPJ. O CNPJ é consultado na API da Receita Federal (ReceitaWS) para auto-preencher os campos, e os registros são persistidos em um banco MySQL local. O CRUD completo é feito direto na interface, com exportação dos registros para Excel.
 
-![Tela principal](imgs/menu.png)
+![Tela principal](imgs/Pyside6_cadastro)![Tela da tabela](imgs/Pyside6_tabela.png)
 
 ## Público-alvo
 
