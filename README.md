@@ -13,14 +13,54 @@ Ferramenta de uso voltada a **recrutadores e usuários técnico-operacionais**. 
 - Python 3.12+
 - MySQL **8.0.16 ou superior** (as constraints `CHECK` usam `REGEXP`)
 - Token gratuito da [ReceitaWS](https://receitaws.com.br/) para o auto-complete via CNPJ
+- No Linux, as bibliotecas do Qt listadas em [Dependências do sistema](#dependências-do-sistema-linux)
+
+## Dependências do sistema (Linux)
+
+No Windows e no macOS o pacote do PySide6 já inclui as bibliotecas do Qt. No Linux não: a partir do **Qt 6.5** o plugin de plataforma `xcb` passou a exigir a `libxcb-cursor`, e sem ela a aplicação aborta na inicialização com:
+
+```
+qt.qpa.plugin: From 6.5.0, xcb-cursor0 or libxcb-cursor0 is needed to load the Qt xcb platform plugin.
+qt.qpa.plugin: Could not load the Qt platform plugin "xcb" in "" even though it was found.
+```
+
+**Ubuntu / Debian / Linux Mint:**
+
+```bash
+sudo apt update
+sudo apt install libxcb-cursor0 libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 \
+                 libxcb-keysyms1 libxcb-render-util0 libxcb-xinerama0 libxcb-shape0 \
+                 libgl1 libglib2.0-0
+```
+
+**Fedora:**
+
+```bash
+sudo dnf install xcb-util-cursor libxkbcommon-x11 xcb-util-wm xcb-util-image \
+                 xcb-util-keysyms xcb-util-renderutil mesa-libGL glib2
+```
+
+> Só a `libxcb-cursor0` é obrigatória para o erro acima; as demais entram na lista porque são dependências comuns do plugin `xcb` e evitam um segundo round de erro em instalações mínimas.
 
 ## Instalação
+
+**Windows (PowerShell):**
 
 ```powershell
 git clone https://github.com/cristianjuniorpena/ProjectPySide6.git
 cd ProjectPySide6
 python -m venv venv
 .\venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+```
+
+**Linux / macOS:**
+
+```bash
+git clone https://github.com/cristianjuniorpena/ProjectPySide6.git
+cd ProjectPySide6
+python3 -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
 ```
 

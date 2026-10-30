@@ -3,10 +3,6 @@ from dataclasses import dataclass
 from dotenv import load_dotenv
 
 load_dotenv()
-
-TABELA_EMPRESA = 'empresa'
-
-
 @dataclass(frozen=True)
 class Settings:
     db_host: str
@@ -15,7 +11,7 @@ class Settings:
     db_password: str
     db_name: str
     receitaws_token: str
-    db_table: str = TABELA_EMPRESA
+    db_table: str = 'empresa'
 
     @classmethod
     def from_env(cls, require_token=True):

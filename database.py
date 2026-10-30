@@ -31,51 +31,40 @@ class Database():
             self.connection.close()
             self.connection = None
 
+    def catch_mySQL_error(self, SQLcommand):
+        try:
+            return SQLcommand()
+        except mysql.connector.Error as error:
+            print(f'erro no comando SQL {error}')
+            return (False, f'erro no comando sql: {error}')
+        finally:
+            self._close()
+
+    @catch_mySQL_error
     def select_empresa(self):
-        try:
-            self.connect()
-            self.cursor.execute('''select * from empresa''')
-            return (True, self.cursor.fetchall())
-        except mysql.connector.Error as error:
-            print(f'erro na busca de dados {error}')
-            return (False, f'erro na busca de dados: {error}')
-        finally:
-            self._close()
+        self.connect()
+        self.cursor.execute('''select * from empresa''')
+        return (True, self.cursor.fetchall())
 
+    @catch_mySQL_error
     def insert_empresa(self, cnpj, nome_empresa, logradouro, numero, complemento, bairro, municipio, uf, cep, telefone, email):
-        try:
-            self.connect()
-            self.cursor.execute('''insert into empresa values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);''', (cnpj, nome_empresa, logradouro, numero, complemento, bairro, municipio, uf, cep, telefone, email))
-            self.connection.commit()
-            return (True, '')
-        except mysql.connector.Error as error:
-            print(f'erro na inserção de dados {error}')
-            return (False, f'erro na inserção de dados: {error}')
-        finally:
-            self._close()
+        self.connect()
+        self.cursor.execute('''insert into empresa values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);''', (cnpj, nome_empresa, logradouro, numero, complemento, bairro, municipio, uf, cep, telefone, email))
+        self.connection.commit()
+        return (True, '')
 
+    @catch_mySQL_error
     def delete_empresa(self, cnpj):
-        try:
-            self.connect()
-            self.cursor.execute('''delete from empresa where cnpj = %s''', (cnpj,))
-            self.connection.commit()
-            return (True, '')
-        except mysql.connector.Error as error:
-            print(f'erro na exclusão de dados {error}')
-            return (False, f'erro na exclusão de dados: {error}')
-        finally:
-            self._close()
+        self.connect()
+        self.cursor.execute('''delete from empresa where cnpj = %s''', (cnpj,))
+        self.connection.commit()
+        return (True, '')
 
+    @catch_mySQL_error
     def update_empresa(self, dados_alterados, cnpj):
-        try:
-            self.connect()
-            campos = ', '.join(f'`{campo}` = %s' for campo in dados_alterados)
-            valores = list(dados_alterados.values()) + [cnpj]
-            self.cursor.execute(f'UPDATE empresa SET {campos} WHERE cnpj = %s', valores)
-            self.connection.commit()
-            return (True, '')
-        except mysql.connector.Error as error:
-            print(f'erro na alteração de dados {error}')
-            return (False, f'erro na alteração de dados: {error}')
-        finally:
-            self._close()
+        self.connect()
+        campos = ', '.join(f'`{campo}` = %s' for campo in dados_alterados)
+        valores = list(dados_alterados.values()) + [cnpj]
+        self.cursor.execute(f'UPDATE empresa SET {campos} WHERE cnpj = %s', valores)
+        self.connection.commit()
+        return (True, '')

@@ -1,9 +1,7 @@
 import re
 import sys
 from pathlib import Path
-
 import mysql.connector
-
 from config import Settings
 
 SCHEMA = Path(__file__).with_name('schema.sql')
