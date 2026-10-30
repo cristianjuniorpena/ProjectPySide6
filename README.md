@@ -64,6 +64,13 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
+## Dependências linux
+
+Para linux pode ser necessário a instalação de alguns módulos:
+
+- sudo apt update && sudo apt install python3-venv 
+- sudo apt update && sudo apt install -y libxcb-cursor0 libxkbcommon-x11-0 libegl1
+
 ## Configuração (.env)
 
 Copie o `.env.example` para `.env` e preencha os valores:

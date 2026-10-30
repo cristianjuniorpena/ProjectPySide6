@@ -5,28 +5,19 @@ import mysql.connector
 from config import Settings
 
 SCHEMA = Path(__file__).with_name('schema.sql')
-VALID_DATABASE_NAME = re.compile(r'^[A-Za-z0-9_]+$')
 
+def validate_database_name(databaseName):
+    VALID_DATABASE_NAME = re.compile(r'^[A-Za-z0-9_]+$')
+    return VALID_DATABASE_NAME.fullmatch(databaseName)
 
-def main():
-    try:
-        settings = Settings.from_env(require_token=False)
-    except RuntimeError as error:
-        print(f'Erro de configuração: {error}')
-        return 1
-
-    if not VALID_DATABASE_NAME.fullmatch(settings.db_name):
-        print(f'Nome de banco inválido no .env: {settings.db_name}')
-        return 1
-
+def try_read_schemaSQL(schema):
     try:
         sql = SCHEMA.read_text(encoding='utf-8')
+        return (True, sql)
     except OSError as error:
-        print(f'Não foi possível ler {SCHEMA.name}: {error}')
-        return 1
-
-    connection = None
-    cursor = None
+        return (False, f'Não foi possível ler {SCHEMA.name}: {error}')
+        
+def create_database_and_table(settings, sql):
     try:
         connection = mysql.connector.connect(
             host=settings.db_host,
@@ -46,15 +37,31 @@ def main():
                 cursor.execute(statement)
         connection.commit()
         print(f'Banco "{settings.db_name}" e tabela "{settings.db_table}" prontos.')
-        return 0
+        return 
     except mysql.connector.Error as error:
         print(f'Erro ao inicializar o banco: {error}')
-        return 1
+        return 
     finally:
         if cursor:
             cursor.close()
         if connection:
             connection.close()
+
+def main():
+    settings = Settings.get_environment_variables_from_env(require_token=False)
+
+    if not validate_database_name(settings.db_name):
+        print('Erro na criação do banco de dados: o DB_NAME .env só pode conter letras e números')
+        return
+
+    ok, sql = try_read_schemaSQL(SCHEMA)
+    if not sql:
+        print(sql)
+        return
+    
+    create_database_and_table(settings, sql)
+
+    
 
 
 if __name__ == '__main__':

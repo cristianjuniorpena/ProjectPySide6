@@ -2,7 +2,7 @@ import mysql.connector
 
 class Database():
     def __init__(self, host, port, user, password, database):
-        self.acesso = {
+        self.acess = {
             'host': host,
             'port': port,
             'user': user,
@@ -14,11 +14,11 @@ class Database():
 
     def connect(self):
         self.connection = mysql.connector.connect(
-            host=self.acesso['host'],
-            port=self.acesso['port'],
-            user=self.acesso['user'],
-            password=self.acesso['password'],
-            database=self.acesso['database'],
+            host=self.acess['host'],
+            port=self.acess['port'],
+            user=self.acess['user'],
+            password=self.acess['password'],
+            database=self.acess['database'],
             connection_timeout=5
         )
         self.cursor = self.connection.cursor()
@@ -31,40 +31,40 @@ class Database():
             self.connection.close()
             self.connection = None
 
-    def catch_mySQL_error(self, SQLcommand):
-        try:
-            return SQLcommand()
-        except mysql.connector.Error as error:
-            print(f'erro no comando SQL {error}')
-            return (False, f'erro no comando sql: {error}')
-        finally:
-            self._close()
+    def catch_workbench_error(SQLcommand):
+        def wrapper(self, *args):
+            try:
+                self.connect()
+                response = SQLcommand(self, *args)
+                return response
+            except mysql.connector.Error as error:
+                print(f'Erro na requisição sql: {error}')
+                return (False, f'Erro na requisição sql: {error}')
+            finally:
+                self._close()
+        return wrapper
 
-    @catch_mySQL_error
+    @catch_workbench_error        
     def select_empresa(self):
-        self.connect()
         self.cursor.execute('''select * from empresa''')
         return (True, self.cursor.fetchall())
 
-    @catch_mySQL_error
+    @catch_workbench_error
     def insert_empresa(self, cnpj, nome_empresa, logradouro, numero, complemento, bairro, municipio, uf, cep, telefone, email):
-        self.connect()
         self.cursor.execute('''insert into empresa values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);''', (cnpj, nome_empresa, logradouro, numero, complemento, bairro, municipio, uf, cep, telefone, email))
         self.connection.commit()
         return (True, '')
 
-    @catch_mySQL_error
+    @catch_workbench_error
     def delete_empresa(self, cnpj):
-        self.connect()
         self.cursor.execute('''delete from empresa where cnpj = %s''', (cnpj,))
         self.connection.commit()
         return (True, '')
 
-    @catch_mySQL_error
+    @catch_workbench_error
     def update_empresa(self, dados_alterados, cnpj):
-        self.connect()
-        campos = ', '.join(f'`{campo}` = %s' for campo in dados_alterados)
-        valores = list(dados_alterados.values()) + [cnpj]
-        self.cursor.execute(f'UPDATE empresa SET {campos} WHERE cnpj = %s', valores)
-        self.connection.commit()
-        return (True, '')
+            campos = ', '.join(f'`{campo}` = %s' for campo in dados_alterados)
+            valores = list(dados_alterados.values()) + [cnpj]
+            self.cursor.execute(f'UPDATE empresa SET {campos} WHERE cnpj = %s', valores)
+            self.connection.commit()
+            return (True, '')
