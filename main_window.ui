@@ -14,7 +14,301 @@
    <string>MainWindow</string>
   </property>
   <property name="styleSheet">
-   <string notr="true"/>
+   <string notr="true">/* ==================== TEMA: PRETO + AZUL ESCURO ==================== */
+QWidget {
+    background-color: transparent;
+    color: #D7E3F4;
+    font-size: 10pt;
+}
+QMainWindow, QWidget#centralwidget {
+    background-color: #070B12;
+}
+/* --------------------------- Containers base --------------------------- */
+#main_container {
+    background-color: #070B12;
+    border: none;
+}
+#left_container {
+    background-color: #0A111C;
+    border: 1px solid #14202F;
+    border-right: 2px solid #1B3A63;
+    border-radius: 0px;
+}
+#frame {
+    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #0D1524, stop:1 #122238);
+    border: 1px solid #1E3350;
+    border-radius: 8px;
+}
+#frame QLabel {
+    color: #EAF2FF;
+    font-size: 11pt;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+#frame_2, #frmMain, #Pages, #toolBox, #pg_home, #pg_cadastrar,
+#pg_contatos, #pg_sobre, #tab, #Empresas {
+    background-color: transparent;
+    border: none;
+}
+/* ------------------------------- Cabeçalho ----------------------------- */
+#frmHeader {
+    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #0B1B33, stop:0.5 #123B6B, stop:1 #0B1B33);
+    border: 1px solid #1E3F6B;
+    border-radius: 10px;
+}
+#frmHeader QLabel {
+    color: #F2F8FF;
+    font-size: 15pt;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}
+/* -------------------------------- Rodapé ------------------------------- */
+#frmfooter {
+    background-color: #0A111C;
+    border: 1px solid #14202F;
+    border-radius: 8px;
+}
+#frmfooter QLabel {
+    color: #7F94B0;
+    font-size: 9pt;
+    letter-spacing: 1px;
+}
+/* --------------------------- Menu lateral (toolbox) -------------------- */
+QToolBox {
+    background-color: transparent;
+    border: none;
+}
+QToolBox::tab {
+    background-color: #101B2A;
+    color: #9FB6D4;
+    border: 1px solid #1E3350;
+    border-radius: 6px;
+    padding: 6px 10px;
+    margin-bottom: 2px;
+}
+QToolBox::tab:selected {
+    background-color: #16345C;
+    color: #FFFFFF;
+    border-color: #2F81F7;
+}
+QToolBox::tab:hover {
+    background-color: #14273F;
+}
+#btn_home, #btn_cadastrar, #btn_contatos, #btn_sobre {
+    background-color: #0D1622;
+    border: 1px solid #1B2E45;
+    border-radius: 6px;
+    color: #C6D7EC;
+    text-align: left;
+    padding: 6px 12px;
+}
+#btn_home:hover, #btn_cadastrar:hover, #btn_contatos:hover, #btn_sobre:hover {
+    background-color: #14304F;
+    border-color: #2F81F7;
+    color: #FFFFFF;
+}
+#btn_home:pressed, #btn_cadastrar:pressed, #btn_contatos:pressed, #btn_sobre:pressed {
+    background-color: #0A2540;
+}
+/* --------------------------------- Abas -------------------------------- */
+QTabWidget::pane {
+    background-color: #0A111C;
+    border: 1px solid #1B2E45;
+    border-radius: 10px;
+    top: -1px;
+}
+QTabBar::tab {
+    background-color: #0D1622;
+    color: #93A9C6;
+    border: 1px solid #1B2E45;
+    border-bottom: none;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    padding: 8px 22px;
+    margin-right: 4px;
+    min-width: 80px;
+}
+QTabBar::tab:selected {
+    background-color: #123055;
+    color: #FFFFFF;
+    border-color: #2F81F7;
+}
+QTabBar::tab:hover {
+    color: #FFFFFF;
+    background-color: #14273F;
+}
+/* ---------------------------- Campos de texto -------------------------- */
+QLineEdit {
+    background-color: #0C1522;
+    border: 1px solid #1D3149;
+    border-radius: 6px;
+    padding: 7px 10px;
+    color: #E7F0FC;
+    placeholder-text-color: #647A96;
+    selection-background-color: #1F6FD0;
+    selection-color: #FFFFFF;
+}
+QLineEdit:hover {
+    border-color: #2A4A72;
+}
+QLineEdit:focus {
+    background-color: #0E1A2A;
+    border: 1px solid #2F81F7;
+}
+/* -------------------------------- Botões ------------------------------- */
+QPushButton {
+    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #1B4D91, stop:1 #123055);
+    border: 1px solid #2C6BB8;
+    border-radius: 7px;
+    color: #F2F8FF;
+    font-weight: 600;
+    padding: 8px 18px;
+}
+QPushButton:hover {
+    background-color: #2670C7;
+    border-color: #4C9BF5;
+}
+QPushButton:pressed {
+    background-color: #0E2440;
+}
+QPushButton:disabled {
+    background-color: #0C131D;
+    border-color: #1A2637;
+    color: #5B6B80;
+}
+#btn_limpar {
+    background-color: #101B2A;
+    border-color: #26405E;
+    color: #C6D7EC;
+    padding: 7px 14px;
+}
+#btn_limpar:hover {
+    background-color: #16304F;
+    border-color: #2F81F7;
+    color: #FFFFFF;
+}
+/* --------------------------------- Tabela ------------------------------ */
+QTableWidget {
+    background-color: #0A121D;
+    alternate-background-color: #0D1726;
+    gridline-color: #1A2B40;
+    border: 1px solid #1D3149;
+    border-radius: 8px;
+    color: #DCE8F7;
+    selection-background-color: #1C5FA8;
+    selection-color: #FFFFFF;
+}
+QTableWidget::item {
+    padding: 6px;
+    border: none;
+}
+QTableWidget::item:selected {
+    background-color: #1C5FA8;
+    color: #FFFFFF;
+}
+QHeaderView::section {
+    background-color: #10203A;
+    color: #BFD4EE;
+    border: none;
+    border-right: 1px solid #1B2E45;
+    border-bottom: 1px solid #1B2E45;
+    padding: 7px 8px;
+    font-weight: 700;
+    font-size: 9pt;
+    letter-spacing: 0.5px;
+}
+QHeaderView::section:hover {
+    background-color: #16304F;
+}
+QTableCornerButton::section {
+    background-color: #10203A;
+    border: none;
+}
+/* ------------------------------ Painéis do form ------------------------ */
+#frame_3, #frame_4 {
+    background-color: #0A111C;
+    border: 1px solid #16263B;
+    border-radius: 10px;
+}
+/* -------------------------------- Labels ------------------------------- */
+QLabel {
+    background-color: transparent;
+    color: #D7E3F4;
+}
+#nomeEmpresa {
+    color: #EAF3FF;
+}
+#label_5, #label_8 {
+    color: #EAF3FF;
+    letter-spacing: 2px;
+}
+#label_9 {
+    color: #B8CBE3;
+    font-size: 11pt;
+}
+#label_12 {
+    color: #7E93B0;
+    font-size: 9pt;
+}
+#label_4, #label_11 {
+    color: #C7D8EE;
+}
+/* --------------------------- Logo na tela Home ------------------------- */
+#label_7 {
+    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #F4F9FF, stop:1 #C9DDF5);
+    border: 1px solid #2F81F7;
+    border-radius: 18px;
+}
+/* -------------------------------- Splitter ----------------------------- */
+#splitter::handle {
+    background-color: #1B2E45;
+    width: 2px;
+}
+/* ------------------------------ Scrollbars ----------------------------- */
+QScrollBar:vertical {
+    background-color: #0A111C;
+    width: 12px;
+    margin: 0px;
+    border: none;
+}
+QScrollBar::handle:vertical {
+    background-color: #1E3B5E;
+    min-height: 30px;
+    border-radius: 6px;
+}
+QScrollBar::handle:vertical:hover {
+    background-color: #2F6BA8;
+}
+QScrollBar:horizontal {
+    background-color: #0A111C;
+    height: 12px;
+    margin: 0px;
+    border: none;
+}
+QScrollBar::handle:horizontal {
+    background-color: #1E3B5E;
+    min-width: 30px;
+    border-radius: 6px;
+}
+QScrollBar::handle:horizontal:hover {
+    background-color: #2F6BA8;
+}
+QScrollBar::add-line, QScrollBar::sub-line {
+    background: none;
+    border: none;
+    width: 0px;
+    height: 0px;
+}
+QScrollBar::add-page, QScrollBar::sub-page {
+    background: transparent;
+}
+/* --------------------------- Dicas (tooltip) --------------------------- */
+QToolTip {
+    background-color: #0D1A2A;
+    color: #DCE8F7;
+    border: 1px solid #2F81F7;
+    padding: 4px;
+}</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="styleSheet">
@@ -75,6 +369,12 @@
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
            <widget class="QToolBox" name="toolBox">
+            <property name="minimumSize">
+             <size>
+              <width>161</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="styleSheet">
              <string notr="true"/>
             </property>
@@ -86,8 +386,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>156</width>
-               <height>434</height>
+               <width>161</width>
+               <height>443</height>
               </rect>
              </property>
              <property name="styleSheet">
@@ -107,7 +407,8 @@
                 </property>
                 <property name="font">
                  <font>
-                  <pointsize>11</pointsize>
+                  <pointsize>10</pointsize>
+                  <fontweight>DemiBold</fontweight>
                  </font>
                 </property>
                 <property name="cursor">
@@ -128,7 +429,8 @@
                 </property>
                 <property name="font">
                  <font>
-                  <pointsize>11</pointsize>
+                  <pointsize>10</pointsize>
+                  <fontweight>DemiBold</fontweight>
                  </font>
                 </property>
                 <property name="cursor">
@@ -149,7 +451,8 @@
                 </property>
                 <property name="font">
                  <font>
-                  <pointsize>11</pointsize>
+                  <pointsize>10</pointsize>
+                  <fontweight>DemiBold</fontweight>
                  </font>
                 </property>
                 <property name="cursor">
@@ -170,7 +473,8 @@
                 </property>
                 <property name="font">
                  <font>
-                  <pointsize>11</pointsize>
+                  <pointsize>10</pointsize>
+                  <fontweight>DemiBold</fontweight>
                  </font>
                 </property>
                 <property name="cursor">
@@ -201,9 +505,15 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>96</width>
-               <height>26</height>
+               <width>167</width>
+               <height>431</height>
               </rect>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>167</width>
+               <height>100</height>
+              </size>
              </property>
              <attribute name="label">
               <string>Page 2</string>
@@ -218,7 +528,7 @@
                </rect>
               </property>
               <property name="text">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Usuário: Padoka&lt;/p&gt;&lt;p&gt;Sistema: Cadastro&lt;/p&gt;&lt;p&gt;Status: Ativo&lt;/p&gt;&lt;p&gt;Venc: 31/12/2026&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700; font-style:italic; text-decoration: underline;&quot;&gt;Usuário: Padoka&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700; font-style:italic; text-decoration: underline;&quot;&gt;Sistema: Cadastro&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700; font-style:italic; text-decoration: underline;&quot;&gt;Status: Ativo&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700; font-style:italic; text-decoration: underline;&quot;&gt;Venc: 31/12/2026&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -295,8 +605,20 @@
             </property>
             <widget class="QWidget" name="pg_home">
              <layout class="QVBoxLayout" name="verticalLayout_6">
-              <item>
+              <item alignment="Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignVCenter">
                <widget class="QLabel" name="label_7">
+                <property name="minimumSize">
+                 <size>
+                  <width>300</width>
+                  <height>270</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>300</width>
+                  <height>270</height>
+                 </size>
+                </property>
                 <property name="text">
                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/myrecursos/logo_sysdev_240px.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
@@ -486,7 +808,7 @@
                    <widget class="QLabel" name="label_5">
                     <property name="font">
                      <font>
-                      <pointsize>22</pointsize>
+                      <pointsize>10</pointsize>
                       <bold>true</bold>
                      </font>
                     </property>
@@ -653,7 +975,7 @@
               <item>
                <widget class="QLabel" name="label_9">
                 <property name="text">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt; color:#000000;&quot;&gt;Este sistema faz consulta do CNPJ utilizando API da Receita Federal e faz o cadastro em um banco de dados. O objetivo deste sistema é ensinar como utilizar Python e o QT para desenvolver aplicações modernas e funcionais.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Este sistema faz consulta do CNPJ utilizando API da Receita Federal e faz o cadastro em um banco de dados. O objetivo deste sistema é ensinar como utilizar Python e o QT para desenvolver aplicações modernas e funcionais.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="wordWrap">
                  <bool>true</bool>
